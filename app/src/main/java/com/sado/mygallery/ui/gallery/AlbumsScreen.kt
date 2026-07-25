@@ -148,22 +148,6 @@ fun AlbumsScreen(
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         MoreListItem(icon = Icons.Default.DeleteOutline, title = "Son silinenler", count = "0")
-                        MoreListItem(icon = Icons.Default.Description, title = "Belgeler", count = "2")
-                        MoreListItem(icon = Icons.Default.Person, title = "Portre", count = "1")
-                        MoreListItem(icon = Icons.Default.Face, title = "Özçekimler", count = "33")
-                        MoreListItem(icon = Icons.Default.Gif, title = "GIF", count = "19")
-                        MoreListItem(icon = Icons.Default.SlowMotionVideo, title = "Ağır çekim", count = "1")
-                        MoreListItem(icon = Icons.Default.HighQuality, title = "Yüksek çözünürlük", count = "4")
-                    }
-                    Spacer(modifier = Modifier.height(32.dp))
-                    
-                    Button(
-                        onClick = { /* Customize */ },
-                        modifier = Modifier.fillMaxWidth().height(48.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-                    ) {
-                        Text("Özelleştir", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
