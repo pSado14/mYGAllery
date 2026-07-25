@@ -2,7 +2,7 @@ package com.sado.mygallery.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val DarkBackground = Color(0xFF121212)
+val DarkBackground = Color(0xFF000000)
 val DarkSurface = Color(0xFF1E1E1E)
 val PurpleAccent = Color(0xFF9D4EDD)
 val CyanAccent = Color(0xFF00E5FF)

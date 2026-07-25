@@ -183,28 +183,56 @@ fun GalleryScreen(
                         }
                     }
                 } else {
-                    NavigationBar(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        tonalElevation = 0.dp
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 24.dp),
+                        contentAlignment = Alignment.BottomCenter
                     ) {
-                        NavigationBarItem(
-                            selected = selectedTabIndex == 0,
-                            onClick = { selectedTabIndex = 0 },
-                            icon = { Icon(Icons.Default.Photo, contentDescription = null) },
-                            label = { Text("Fotoğraflar") }
-                        )
-                        NavigationBarItem(
-                            selected = selectedTabIndex == 1,
-                            onClick = { selectedTabIndex = 1 },
-                            icon = { Icon(Icons.Default.PhotoAlbum, contentDescription = null) },
-                            label = { Text("Albümler") }
-                        )
-                        NavigationBarItem(
-                            selected = selectedTabIndex == 2,
-                            onClick = { selectedTabIndex = 2 },
-                            icon = { Icon(Icons.Default.CleaningServices, contentDescription = null) },
-                            label = { Text("Temizle") }
-                        )
+                        androidx.compose.material3.Surface(
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(32.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f),
+                            tonalElevation = 8.dp
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 32.dp, vertical = 12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(48.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                IconButton(
+                                    onClick = { selectedTabIndex = 0 },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Photo, 
+                                        contentDescription = "Fotoğraflar",
+                                        tint = if (selectedTabIndex == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                
+                                IconButton(
+                                    onClick = { selectedTabIndex = 1 },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.PhotoAlbum, 
+                                        contentDescription = "Albümler",
+                                        tint = if (selectedTabIndex == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                
+                                IconButton(
+                                    onClick = { selectedTabIndex = 2 },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.CleaningServices, 
+                                        contentDescription = "Temizle",
+                                        tint = if (selectedTabIndex == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
