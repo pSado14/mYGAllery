@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "com.sado.mygallery.app-debug-70:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "com.sado.mygallery.app-main-72:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.sado.mygallery.app-debug-70:/xml_backup_rules.xml.flat",
+        "source": "com.sado.mygallery.app-main-72:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.sado.mygallery.app-debug-70:/xml_data_extraction_rules.xml.flat",
+        "source": "com.sado.mygallery.app-main-72:/xml/data_extraction_rules.xml"
+    }
+]
