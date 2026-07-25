@@ -62,7 +62,7 @@ class GalleryRepository @Inject constructor(
                 }
                 
                 val itemUri = ContentUris.withAppendedId(baseUri, id)
-                images.add(GalleryImage(id, itemUri, dateAdded, data, bucket))
+                images.add(GalleryImage(id, itemUri, dateAdded, data, bucket, mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO))
             }
         }
         return@withContext images
@@ -173,7 +173,7 @@ class GalleryRepository @Inject constructor(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 }
                 val itemUri = ContentUris.withAppendedId(baseUri, id)
-                images.add(GalleryImage(id, itemUri, dateAdded, data, bucket))
+                images.add(GalleryImage(id, itemUri, dateAdded, data, bucket, mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO))
             }
         }
         emit(images)
@@ -223,7 +223,7 @@ class GalleryRepository @Inject constructor(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                     }
                     val itemUri = ContentUris.withAppendedId(baseUri, id)
-                    images.add(GalleryImage(id, itemUri, dateAdded, data, bucket))
+                    images.add(GalleryImage(id, itemUri, dateAdded, data, bucket, mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO))
                 }
             }
         }

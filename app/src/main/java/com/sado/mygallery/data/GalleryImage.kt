@@ -7,5 +7,7 @@ data class GalleryImage(
     val uri: Uri,
     val dateAdded: Long,
     val path: String = "",
-    val albumName: String = ""
+    val albumName: String = "",
+    val isVideo: Boolean = false,
+    val isFavorite: Boolean = false
 )

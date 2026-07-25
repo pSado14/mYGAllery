@@ -14,7 +14,14 @@ import com.sado.mygallery.ui.gallery.GalleryScreen
 fun AppNavGraph() {
     val navController = rememberNavController()
     
-    NavHost(navController = navController, startDestination = "gallery") {
+    NavHost(
+        navController = navController, 
+        startDestination = "gallery",
+        enterTransition = { androidx.compose.animation.fadeIn(animationSpec = androidx.compose.animation.core.tween(300)) },
+        exitTransition = { androidx.compose.animation.fadeOut(animationSpec = androidx.compose.animation.core.tween(300)) },
+        popEnterTransition = { androidx.compose.animation.fadeIn(animationSpec = androidx.compose.animation.core.tween(300)) },
+        popExitTransition = { androidx.compose.animation.fadeOut(animationSpec = androidx.compose.animation.core.tween(300)) }
+    ) {
         composable("gallery") {
             GalleryScreen(
                 onImageClick = { uriString ->

@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,11 +22,23 @@ class GalleryViewModel @Inject constructor(
     application: Application,
     private val repository: GalleryRepository,
     private val aiAnalyzer: AiAnalyzer,
-    private val ruleDao: com.sado.mygallery.data.local.RuleDao
+    private val ruleDao: com.sado.mygallery.data.local.RuleDao,
+    private val favoriteDao: com.sado.mygallery.data.local.FavoriteDao
 ) : AndroidViewModel(application) {
 
-    private val _images = MutableStateFlow<List<GalleryImage>>(emptyList())
-    val images: StateFlow<List<GalleryImage>> = _images.asStateFlow()
+    private val _loadedImages = MutableStateFlow<List<GalleryImage>>(emptyList())
+    
+    val images: StateFlow<List<GalleryImage>> = kotlinx.coroutines.flow.combine(
+        _loadedImages,
+        favoriteDao.getAllFavoriteUris()
+    ) { baseImages, favUris ->
+        val favSet = favUris.toSet()
+        baseImages.map { it.copy(isFavorite = favSet.contains(it.uri.toString())) }
+    }.stateIn(
+        scope = viewModelScope,
+        started = kotlinx.coroutines.flow.SharingStarted.Lazily,
+        initialValue = emptyList()
+    )
 
     private val _isOrganizing = MutableStateFlow(false)
     val isOrganizing: StateFlow<Boolean> = _isOrganizing.asStateFlow()
@@ -32,7 +46,7 @@ class GalleryViewModel @Inject constructor(
     fun loadImages() {
         viewModelScope.launch {
             val result = repository.getImages()
-            _images.value = result
+            _loadedImages.value = result
         }
     }
 

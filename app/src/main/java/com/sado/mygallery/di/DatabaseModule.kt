@@ -38,4 +38,10 @@ object DatabaseModule {
     fun provideRuleDao(database: GalleryDatabase): com.sado.mygallery.data.local.RuleDao {
         return database.ruleDao()
     }
+    
+    @Provides
+    @Singleton
+    fun provideFavoriteDao(database: GalleryDatabase): com.sado.mygallery.data.local.FavoriteDao {
+        return database.favoriteDao()
+    }
 }

@@ -11,11 +11,21 @@ import com.sado.mygallery.ui.gallery.GalleryScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 import com.sado.mygallery.ui.theme.MyGalleryTheme
-
+import coil.ImageLoader
+import coil.decode.VideoFrameDecoder
+import coil.Coil
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val imageLoader = ImageLoader.Builder(this)
+            .components {
+                add(VideoFrameDecoder.Factory())
+            }
+            .build()
+        Coil.setImageLoader(imageLoader)
+
         setContent {
             MyGalleryTheme {
                 Surface(

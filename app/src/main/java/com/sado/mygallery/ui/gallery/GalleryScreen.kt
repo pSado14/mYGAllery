@@ -97,11 +97,18 @@ fun GalleryScreen(
     var selectedUris by remember { mutableStateOf(setOf<String>()) }
     val isOrganizing by viewModel.isOrganizing.collectAsState()
     val images by viewModel.images.collectAsState()
+    
+    val deleteLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            android.widget.Toast.makeText(context, "Medyalar silindi", android.widget.Toast.LENGTH_SHORT).show()
+            isSelectionMode = false
+            selectedUris = emptySet()
+            viewModel.loadImages()
+        }
+    }
 
     if (hasPermission) {
-        val scrollBehavior = androidx.compose.material3.TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 if (isSelectionMode) {
                     androidx.compose.material3.TopAppBar(
@@ -133,7 +140,7 @@ fun GalleryScreen(
                     )
                 } else {
                     androidx.compose.material3.TopAppBar(
-                        title = { Text("Galeri", style = MaterialTheme.typography.titleLarge) },
+                        title = { },
                         actions = {
                             IconButton(onClick = onSettingsClick) {
                                 Icon(Icons.Default.Settings, contentDescription = "Ayarlar")
@@ -173,8 +180,15 @@ fun GalleryScreen(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.clickable {
-                                    // Normally this would delete, but we just trigger the onTrashClick logic or a toast
-                                    onTrashClick()
+                                    val urisToTrash = selectedUris.map { android.net.Uri.parse(it) }
+                                    if (urisToTrash.isNotEmpty()) {
+                                        val intentSender = com.sado.mygallery.utils.StorageManager.getTrashIntentSender(context, urisToTrash)
+                                        if (intentSender != null) {
+                                            deleteLauncher.launch(androidx.activity.result.IntentSenderRequest.Builder(intentSender).build())
+                                        } else {
+                                            android.widget.Toast.makeText(context, "Silme işlemi bu cihazda desteklenmiyor", android.widget.Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
                                 }.padding(8.dp)
                             ) {
                                 Icon(Icons.Default.DeleteOutline, contentDescription = "Sil", tint = MaterialTheme.colorScheme.error)
@@ -231,6 +245,17 @@ fun GalleryScreen(
                                         tint = if (selectedTabIndex == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
+                                
+                                IconButton(
+                                    onClick = { selectedTabIndex = 3 },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Favorite, 
+                                        contentDescription = "Favoriler",
+                                        tint = if (selectedTabIndex == 3) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
                     }
@@ -257,6 +282,23 @@ fun GalleryScreen(
                     )
                     1 -> AlbumsScreen(onAlbumClick = onAlbumClick)
                     2 -> CleanerScreen()
+                    3 -> GalleryContent(
+                        viewModel = viewModel, 
+                        onImageClick = onImageClick,
+                        isSelectionMode = isSelectionMode,
+                        selectedUris = selectedUris,
+                        onSelectionChange = { uri, isSelected ->
+                            val newSet = selectedUris.toMutableSet()
+                            if (isSelected) newSet.add(uri) else newSet.remove(uri)
+                            selectedUris = newSet
+                            if (newSet.isEmpty()) isSelectionMode = false
+                        },
+                        onLongPress = { uri ->
+                            isSelectionMode = true
+                            selectedUris = setOf(uri)
+                        },
+                        isFavoritesOnly = true
+                    )
                 }
                 
                 if (isOrganizing) {
@@ -290,7 +332,7 @@ fun GalleryScreen(
     }
 }
 
-@androidx.compose.foundation.ExperimentalFoundationApi
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun GalleryContent(
     viewModel: GalleryViewModel, 
@@ -298,9 +340,11 @@ fun GalleryContent(
     isSelectionMode: Boolean,
     selectedUris: Set<String>,
     onSelectionChange: (String, Boolean) -> Unit,
-    onLongPress: (String) -> Unit
+    onLongPress: (String) -> Unit,
+    isFavoritesOnly: Boolean = false
 ) {
-    val images by viewModel.images.collectAsState()
+    val allImages by viewModel.images.collectAsState()
+    val images = if (isFavoritesOnly) allImages.filter { it.isFavorite } else allImages
     
     // Group images by date
     val groupedImages = remember(images) {
@@ -350,11 +394,26 @@ fun GalleryContent(
                         )
                 ) {
                     AsyncImage(
-                        model = image.uri,
+                        model = coil.request.ImageRequest.Builder(LocalContext.current)
+                            .data(image.uri)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = "Gallery Image",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
+                    
+                    if (image.isVideo) {
+                        Icon(
+                            imageVector = Icons.Default.PlayCircleOutline,
+                            contentDescription = "Video",
+                            tint = Color.White.copy(alpha = 0.8f),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(32.dp)
+                                .background(Color.Black.copy(alpha = 0.2f), androidx.compose.foundation.shape.CircleShape)
+                        )
+                    }
                     
                     if (isSelectionMode) {
                         // Xiaomi style subtle overlay for unselected, checkmark for selected

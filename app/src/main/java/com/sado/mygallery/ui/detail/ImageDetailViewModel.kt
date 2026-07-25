@@ -18,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ImageDetailViewModel @Inject constructor(
     private val aiAnalyzer: AiAnalyzer,
-    private val repository: GalleryRepository
+    private val repository: GalleryRepository,
+    private val favoriteDao: com.sado.mygallery.data.local.FavoriteDao
 ) : ViewModel() {
 
     private val _analysisState = MutableStateFlow<AnalysisState>(AnalysisState.Idle)
@@ -42,9 +43,31 @@ class ImageDetailViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
+    val images = kotlinx.coroutines.flow.combine(
+        kotlinx.coroutines.flow.flow { emit(repository.getImages()) },
+        favoriteDao.getAllFavoriteUris()
+    ) { baseImages, favUris ->
+        val favSet = favUris.toSet()
+        baseImages.map { it.copy(isFavorite = favSet.contains(it.uri.toString())) }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
     fun addToAlbum(albumId: Long, imageUri: String) {
         viewModelScope.launch {
             repository.addImageToAlbum(albumId, imageUri)
+        }
+    }
+    
+    fun toggleFavorite(uri: String) {
+        viewModelScope.launch {
+            if (favoriteDao.isFavorite(uri)) {
+                favoriteDao.removeFavorite(uri)
+            } else {
+                favoriteDao.addFavorite(com.sado.mygallery.data.local.Favorite(imageUri = uri))
+            }
         }
     }
 }

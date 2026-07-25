@@ -64,6 +64,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
     implementation("androidx.compose.animation:animation")
     implementation("androidx.compose.animation:animation-core")
     implementation("androidx.compose.foundation:foundation")
@@ -85,6 +86,12 @@ dependencies {
     
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("me.saket.telephoto:zoomable-image-coil:0.6.2")
+    implementation("io.coil-kt:coil-video:2.5.0")
+    
+    // Media3 (ExoPlayer) for Video Playback
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("androidx.media3:media3-ui:1.2.1")
     
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
